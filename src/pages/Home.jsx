@@ -1,14 +1,15 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"; // Import for animations
 import { FaCoffee, FaLeaf, FaUsers, FaClock, FaHeart, FaStar } from "react-icons/fa"; // New icons
-// import bgVideo from '../assets/bg.mp4'; // Background video import
 import bf1 from '../assets/bf1.jpg'; // Imported image for special 1
 import l1 from '../assets/L1.jpg'; // Imported image for special 2
 import c5 from '../assets/c5.jpg'; // Imported image for special 3
-import bgVideo from "../assets/aboutbg1.mp4";
+import bgVideo from "../assets/bg1.mp4";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [videoLoaded, setVideoLoaded] = useState(false);
 
   // Animation variants for cards
   const cardVariants = {
@@ -49,34 +50,56 @@ export default function Home() {
   return (
     <div className="bg-[#DAEBCB] text-[#064e3b] font-sans">
       
-      {/* HERO SECTION with Background Video */}
-      <section className="relative h-screen overflow-hidden flex items-center justify-center">
+      {/* HERO SECTION with Lazy Loaded Background Video */}
+     {/* HERO SECTION with High-Speed Loading Logic */}
+      <section className="relative h-screen overflow-hidden flex items-center justify-center bg-black">
+        {/* 1. THE VIDEO: Note the use of onLoadedData for faster visibility */}
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover "
+          preload="auto" 
+          onLoadedData={() => setVideoLoaded(true)} 
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+            videoLoaded ? "opacity-100" : "opacity-0"
+          }`}
           src={bgVideo}
+          // OPTIONAL: Add a poster image path below. 
+          // This image shows instantly before the video even starts downloading.
+          // poster={bf1} 
         />
-        <div className="absolute inset-0 bg-black/60" /> {/* Added a subtle overlay for text readability */}
+        
+        {/* 2. THE PLACEHOLDER: Shows a blurred version of your special image 
+            or a solid color until the video is ready */}
+        {!videoLoaded && (
+          <div 
+            className="absolute inset-0 bg-cover bg-center transition-opacity duration-500"
+            style={{ 
+              backgroundImage: `url(${bf1})`, // Using your bf1.jpg as a temporary background
+              filter: 'blur(10px) brightness(0.5)' 
+            }}
+          />
+        )}
+
+        {/* 3. THE OVERLAY: Keeps text readable regardless of video brightness */}
+        <div className="absolute inset-0 bg-black/50" /> 
         
         <div className="relative z-10 text-center text-white px-6 max-w-4xl">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+          <motion.h1 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-5xl md:text-7xl font-bold mb-6 leading-tight"
+          >
             Brewed Fresh <br/>Served with Love
-          </h1>
+          </motion.h1>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button 
               onClick={() => navigate("/menu")} 
               className="bg-[#DAEBCB] text-[#064e3b] px-8 py-4 rounded-2xl font-bold hover:bg-[#047857] hover:text-white transition"
             >
               View Menu
-            </button>
-            <button 
-              onClick={() => navigate("/menu")} 
-              className="bg-[#DAEBCB] text-[#064e3b] px-8 py-4 rounded-2xl font-bold hover:bg-[#047857] hover:text-white transition"
-            >
-              Order Online
             </button>
           </div>
         </div>
@@ -115,6 +138,7 @@ export default function Home() {
                   src={item.image}
                   alt={item.name}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
 
@@ -153,6 +177,7 @@ export default function Home() {
               src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80" 
               alt="Barista making fresh coffee in a pastel green themed café"
               className="w-full h-full object-cover"
+              loading="lazy"
             />
           </div>
         </div>
@@ -196,6 +221,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-</div>
+    </div>
   );
 }

@@ -249,10 +249,9 @@ export default function Header() {
             ) : (
               <Link
                 to="/login"
-                className="flex items-center gap-2 text-white hover:opacity-80 transition"
+                className="text-sm text-white tracking-widest font-bold transition hover:opacity-70 "
               >
-                <LogIn size={22} />
-                <span>Log In</span>
+                <span>LOG IN</span>
               </Link>
             )}
           </nav>
@@ -282,12 +281,12 @@ export default function Header() {
                 </button>
               ))}
 
-              <button
+              {/* <button
                 onClick={() => handleNavigation("/order")}
-                className="bg-white text-black px-6 py-4 rounded-full font-bold w-full mt-4"
+                className="bg-white text-black px-6 py-4 rounded-2xl font-bold w-full mt-4"
               >
                 ORDER NOW
-              </button>
+              </button> */}
 
               <div className="pt-4 border-t border-white/20">
                 {user ? (
@@ -315,8 +314,7 @@ export default function Header() {
                     onClick={() => setIsMenuOpen(false)}
                     className="flex items-center gap-4 text-lg font-medium py-4 text-white"
                   >
-                    <LogIn size={26} />
-                    <span>Log In / Sign Up</span>
+                    <span>LOG IN</span>
                   </Link>
                 )}
               </div>
