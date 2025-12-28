@@ -187,7 +187,7 @@ export function CartProvider({ children }) {
 
   const removeItem = async (itemId) => {
     try {
-      await axios.delete(`/cart/item/${itemId}`);
+      await axios.delete(`/cart/${itemId}`);
       await fetchCart(true);
     } catch (err) {
       console.error('Remove failed:', err);

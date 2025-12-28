@@ -37,16 +37,47 @@ const AddressForm = ({ initialData = {}, isEdit = false }) => {
     try {
       if (isEdit) {
         await axios.patch(`/user/addresses/${initialData.id}`, formData);
-        alert('Address updated successfully!');
+        // alert('Address updated successfully!');
+        // Success toast
+              Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: `Address has been updated successfully.`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#f0fdf4',
+                iconColor: COLOR_PRIMARY,
+              });
       } else {
         await axios.post('/user/addresses', formData);
-        alert('Address added successfully!');
+        // alert('Address added successfully!');
+        Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: `Address has been added successfully.`,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                background: '#f0fdf4',
+                iconColor: COLOR_PRIMARY,
+              });
       }
       navigate('/profile?tab=addresses');
     } catch (err) {
       console.error('Address save error:', err.response?.data || err);
-      const message = err.response?.data?.message || 'Failed to save address. Check details.';
-      alert(message);
+      // const message = err.response?.data?.message || 'Failed to save address. Check details.';
+      // alert(message);
+      Swal.fire({
+              icon: 'error',
+              title: 'Update Failed',
+              text: 'Failed to save address.',
+              confirmButtonColor: COLOR_PRIMARY,
+            });
     } finally {
       setLoading(false);
     }

@@ -487,6 +487,7 @@
 import React, { useState } from 'react';
 import axios from '../api/axios';
 import { useCart } from '../context/CartContext';
+import Swal from 'sweetalert2';
 
 // Assets
 import bf1 from '../assets/bf1.jpg';
@@ -670,6 +671,8 @@ const kidsMeals = [
 export default function Menu() {
   const { addItem, cart } = useCart();
   const [selections, setSelections] = useState({});
+  const [loadingSection, setLoadingSection] = useState(null); // Tracks which section is adding
+  const [loadingKidsItem, setLoadingKidsItem] = useState(null); // Tracks kids meal adding
 
   const formatPrice = (p) => (typeof p === 'number' ? `£${Number(p).toFixed(2)}` : p);
 
@@ -736,9 +739,17 @@ export default function Menu() {
     });
 
     if (selectedItems.length === 0) {
-      alert('Please select at least one item');
+      // alert('Please select at least one item');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Nothing Selected',
+        text: 'Please select at least one item before adding to bag.',
+        confirmButtonColor: '#047857',
+      });
       return;
     }
+
+    setLoadingSection(section.id);
 
     const payload = {
       item_name: section.title,
@@ -750,16 +761,42 @@ export default function Menu() {
 
     try {
       await addItem(payload);
-      alert('Added to cart!');
+      // alert('Added to cart!');
+      Swal.fire({
+        icon: 'success',
+        title: 'Added to Bag!',
+        text: `${section.title} has been added successfully.`,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#ecfdf5',
+        iconColor: '#047857',
+      });
       setSelections(prev => ({ ...prev, [section.id]: {} })); // reset this section only
     } catch (error) {
       console.error('Failed to add item:', error);
-      alert('Could not add item to cart. Please try again.');
+      // alert('You need to login first to add items to cart and place orders.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Required',
+        text: 'You need to log in first to add items to your bag.',
+        confirmButtonColor: '#047857',
+      });
+    }finally {
+      setLoadingSection(null);
     }
   };
 
   const addKidsMeal = async (item) => {
     const price = typeof item.price === 'number' ? item.price : 0;
+
+    if (price === 0 && item.name.includes('Water')) {
+      // Free water – optional special handling
+    }
+
+    setLoadingKidsItem(item.name);
 
     const payload = {
       item_name: item.name,
@@ -771,10 +808,31 @@ export default function Menu() {
 
     try {
       await addItem(payload);
-      alert(`${item.name} added to cart!`);
+      // alert(`${item.name} added to cart!`);
+      Swal.fire({
+        icon: 'success',
+        title: 'Added!',
+        text: `${item.name} added to your order.`,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#ecfdf5',
+        iconColor: '#047857',
+      });
     } catch (err) {
       console.error('Failed to add kids meal:', err);
-      alert('Failed to add item');
+      // alert('Failed to add item');
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to Add',
+        text: 'Please log in to add items to your order.',
+        confirmButtonColor: '#047857',
+      });
+    }
+    finally {
+      setLoadingKidsItem(null);
     }
   };
 
@@ -900,11 +958,21 @@ export default function Menu() {
 
               <button
                 onClick={() => addCurrentSection(section)}
+                disabled={loadingSection === section.id}
                 className="w-full mt-8 md:mt-10 py-4 md:p-5 bg-[#DAEBCB] text-[#064e3b] rounded-xl font-bold flex justify-between px-6 md:px-8 items-center hover:bg-[#047857] transition-colors border-2 border-[#047857] shadow-sm"
               >
-                <span className="uppercase tracking-widest text-[10px] md:text-lg">Add to Bag</span>
+                {/* <span className="uppercase tracking-widest text-[10px] md:text-lg">Add to Bag</span> */}
+                <span className="uppercase tracking-widest text-[10px] md:text-lg">
+                  {loadingSection === section.id ? 'Adding...' : 'Add to Bag'}
+                </span>
                 <span className="font-serif italic text-lg md:text-xl">
                   £{calculateSectionTotal(section.id)}
+                  {loadingSection === section.id && (
+                    <svg className="animate-spin h-5 w-5 text-[#064e3b]" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  )}
                 </span>
               </button>
             </div>
@@ -944,9 +1012,21 @@ export default function Menu() {
                   </span>
                   <button
                     onClick={() => addKidsMeal(item)}
+                    disabled={loadingKidsItem === item.name}
                     className="w-full py-3 bg-[#DAEBCB] text-[#064e3b] rounded-xl font-bold hover:bg-[#047857] transition-colors border-2 border-[#047857]"
                   >
-                    Add to Order
+                    {/* Add to Order */}
+                    {loadingKidsItem === item.name ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Adding...
+                      </>
+                    ) : (
+                      'Add to Order'
+                    )}
                   </button>
                 </div>
               </div>

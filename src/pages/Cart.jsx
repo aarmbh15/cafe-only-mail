@@ -414,10 +414,38 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 export default function Cart() {
   const { cart, total, loading, isFetching, updateQuantity, removeItem } = useCart();
   const navigate = useNavigate();
+
+  const handleRemoveItem = async (itemId, itemName) => {
+    const result = await Swal.fire({
+      title: 'Remove item?',
+      text: `Are you sure you want to remove "${itemName}" from your cart?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#004d40',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, remove it',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (result.isConfirmed) {
+      await removeItem(itemId);
+      Swal.fire({
+        title: 'Removed!',
+        text: `${itemName} has been removed from your cart.`,
+        icon: 'success',
+        timer: 2000,
+        timerProgressBar: true,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+      });
+    }
+  };
 
   if (loading) return <div className="min-h-screen bg-[#DAEBCB] flex items-center justify-center">Loading cart...</div>;
 
@@ -483,6 +511,7 @@ export default function Cart() {
   const unitPrice = Number(item.totalPrice ?? item.total_price ?? item.price ?? 0);
   const quantity = Number(item.quantity || 1);
   const lineTotal = unitPrice * quantity;
+  const itemName = item.base || item.item_name || 'Item';
 
   return (
     <div key={item.id} className="p-6 border-b last:border-0">
@@ -530,7 +559,8 @@ export default function Cart() {
 
       <div className="mt-4 flex items-center justify-between text-sm">
         <button
-          onClick={() => removeItem(item.id)}
+          // onClick={() => removeItem(item.id)}
+          onClick={() => handleRemoveItem(item.id, itemName)}
           className="text-red-600 hover:text-red-800 hover:underline transition-colors"
         >
           Remove

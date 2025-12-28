@@ -724,6 +724,7 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
+import Swal from 'sweetalert2';
 
 export default function Checkout() {
   const { cart, total, loading, refetch,clearCart } = useCart();
@@ -771,12 +772,24 @@ export default function Checkout() {
     e.preventDefault();
 
     if (!details.name || !details.email || !details.phone) {
-      alert('Please fill in Name, Email, and Phone');
+      // alert('Please fill in Name, Email, and Phone');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Details',
+        text: 'Please fill in your Name, Email, and Phone Number.',
+        confirmButtonColor: '#004d40',
+      });
       return;
     }
 
     if (cart.length === 0) {
-      alert('Your cart is empty!');
+      // alert('Your cart is empty!');
+      Swal.fire({
+        icon: 'info',
+        title: 'Empty Cart',
+        text: 'Your cart is empty! Add some delicious items first.',
+        confirmButtonColor: '#004d40',
+      });
       return;
     }
 
@@ -798,15 +811,38 @@ export default function Checkout() {
 
     try {
       await axios.post('/orders/create', orderData);
-      alert('Order placed successfully! 🎉');
-      refetch(); // Clear cart
+      // alert('Order placed successfully! 🎉');
+      // Success SweetAlert
+      await Swal.fire({
+        icon: 'success',
+        title: 'Order Placed Successfully!',
+        html: `
+          <p class="text-lg">Thank you, <strong>${details.name}</strong>!</p>
+          <p>Your order totalling <strong>£${total.toFixed(2)}</strong> has been received.</p>
+          <p class="text-sm mt-4 text-gray-600">We'll prepare it fresh for collection.</p>
+        `,
+        confirmButtonText: 'View Confirmation',
+        confirmButtonColor: '#004d40',
+        allowOutsideClick: false,
+      });
+      await refetch(); // Clear cart
       navigate('/order-confirmation');
     } catch (error) {
       console.error('❌ Order failed:', error);
-      alert(
-        error.response?.data?.message || 
-        'Order failed. Please try again.'
-      );
+      // alert(
+      //   error.response?.data?.message || 
+      //   'Order failed. Please try again.'
+      // );
+      const errorMessage = error.response?.data?.message 
+        || error.response?.data?.error 
+        || 'Something went wrong. Please try again.';
+
+      Swal.fire({
+        icon: 'error',
+        title: 'Order Failed',
+        text: errorMessage,
+        confirmButtonColor: '#004d40',
+      });
     } finally {
       setSubmitting(false);
     }
@@ -815,7 +851,11 @@ export default function Checkout() {
   if (loading || fetchingUser) {
     return (
       <div className="min-h-screen bg-[#DAEBCB] flex items-center justify-center">
-        <p className="text-3xl text-[#004d40]">Loading checkout...</p>
+        {/* <p className="text-3xl text-[#004d40]">Loading checkout...</p> */}
+        <div className="text-center">
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-4 border-[#004d40] mb-4"></div>
+          <p className="text-3xl text-[#004d40]">Loading checkout...</p>
+        </div>
       </div>
     );
   }
@@ -947,7 +987,19 @@ export default function Checkout() {
               disabled={submitting}
               className="w-full py-5 bg-[#DAEBCB] text-[#064e3b] border-2 border-[#064e3b] text-2xl md:text-3xl font-bold rounded-xl shadow-xl hover:bg-[#047857] transition active:scale-95 disabled:opacity-70"
             >
-              {submitting ? 'Placing Order...' : `Place Order • £${total.toFixed(2)}`}
+              {/* {submitting ? 'Placing Order...' : `Place Order • £${total.toFixed(2)}`} */}
+            {submitting ? (
+                <>
+                  
+                  Placing Order...
+                  <svg className="animate-spin h-8 w-8 text-[#064e3b]" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                </>
+              ) : (
+                `Place Order • £${total.toFixed(2)}`
+              )}
             </button>
           </form>
         </div>

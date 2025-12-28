@@ -132,9 +132,153 @@
 //   );
 // }
 
-import React, { useState,useContext } from 'react';
+// import React, { useState,useContext } from 'react';
+// import { motion } from 'framer-motion';
+// import { Mail, Lock } from 'lucide-react';
+// import { Link, useNavigate } from 'react-router-dom';
+// import axios from '../api/axios';
+// import Swal from 'sweetalert2';
+// import { AuthContext } from '../context/AuthContext';
+
+// const COLOR_PRIMARY = '#006A4E';
+
+// const Login = () => {
+//   const navigate = useNavigate();
+//   const [formData, setFormData] = useState({ email: '', password: '' });
+
+//   const handleChange = (e) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
+//   };
+
+//   // Inside component
+//   const { refetch } = useContext(AuthContext);
+
+//   const handleSubmit = async (e) => {
+//   e.preventDefault();
+
+//   try {
+//     console.log("Fetching CSRF cookie...");
+    
+//     await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+
+//     console.log("Attempting login...");
+//     const response = await axios.post('/login', formData);
+
+//     console.log("✅ Login successful:", response.data);
+
+//     // Check cookies in browser
+//     console.log("Current cookies:", document.cookie);
+
+//     Swal.fire({
+//       icon: 'success',
+//       title: 'Welcome!',
+//       text: response.data.message || 'Login successful',
+//       confirmButtonColor: COLOR_PRIMARY,
+//     }).then(() => {
+//       refetch();  // Force immediate re-check of /user with the new session
+//       navigate('/'); 
+//       // Optional: window.location.reload() to refresh any user data
+//     });
+//   } catch (err) {
+//     console.error('Login failed:', err);
+//     Swal.fire({
+//       icon: 'error',
+//       title: 'Login Failed',
+//       text: err.response?.data?.message || 'Invalid credentials or server error',
+//     });
+//   }
+// };
+
+//   return (
+//     <div className="min-h-screen flex items-center justify-center py-12 px-4">
+//       <motion.div
+//         initial={{ opacity: 0, y: 20 }}
+//         animate={{ opacity: 1, y: 0 }}
+//         transition={{ duration: 0.4 }}
+//         className="max-w-md w-full space-y-8 p-10 rounded-2xl shadow-xl"
+//       >
+//         <div className="text-center">
+//           <h2 className="text-4xl font-bold" style={{ color: COLOR_PRIMARY }}>
+//             Welcome Back
+//           </h2>
+//           <p className="mt-2 text-gray-600">Log in to your account</p>
+//         </div>
+
+//         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+//           <div className="space-y-5">
+//             {/* Email Field */}
+//             <div className="relative">
+//               <Mail className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+//               <input
+//                 type="email"
+//                 name="email"
+//                 placeholder="Email address"
+//                 value={formData.email}
+//                 onChange={handleChange}
+//                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
+//                 required
+//               />
+//             </div>
+
+//             {/* Password Field */}
+//             <div className="relative">
+//               <Lock className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
+//               <input
+//                 type="password"
+//                 name="password"
+//                 placeholder="Password"
+//                 value={formData.password}
+//                 onChange={handleChange}
+//                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
+//                 required
+//               />
+//             </div>
+
+//             {/* Forgot Password */}
+//             <div className="text-left underline">
+//               <Link
+//                 to="/recover"
+//                 className="text-sm font-medium hover:underline transition-all"
+//                 style={{ color: COLOR_PRIMARY }}
+//               >
+//                 Forgot your password?
+//               </Link>
+//             </div>
+//           </div>
+
+//           {/* Sign In Button */}
+//           <motion.button
+//             whileHover={{ scale: 1.02 }}
+//             whileTap={{ scale: 0.98 }}
+//             type="submit"
+//             className="w-full py-3.5 rounded-lg text-white font-semibold text-lg shadow-md hover:shadow-lg transition-all"
+//             style={{ backgroundColor: COLOR_PRIMARY }}
+//           >
+//             Sign In
+//           </motion.button>
+//         </form>
+
+//         {/* Register Link */}
+//         <p className="text-center text-sm text-gray-600 -mt-2">
+//           Don't have an account? <br />
+//           <Link
+//             to="/register"
+//             className="font-semibold hover:underline transition-all"
+//             style={{ color: COLOR_PRIMARY }}
+//           >
+//             Create New Account
+//           </Link>
+//         </p>
+//       </motion.div>
+//     </div>
+//   );
+// };
+
+// export default Login;
+
+import React, { useState, useContext } from 'react';
 import { motion } from 'framer-motion';
-import { Mail, Lock } from 'lucide-react';
+import { Mail, Lock, Loader2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from '../api/axios';
 import Swal from 'sweetalert2';
@@ -144,50 +288,51 @@ const COLOR_PRIMARY = '#006A4E';
 
 const Login = () => {
   const navigate = useNavigate();
+  const { refetch } = useContext(AuthContext);
+
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Inside component
-  const { refetch } = useContext(AuthContext);
-
   const handleSubmit = async (e) => {
-  e.preventDefault();
-
-  try {
-    console.log("Fetching CSRF cookie...");
+    e.preventDefault();
     
-    await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+    try {
+      setIsLoading(true);
 
-    console.log("Attempting login...");
-    const response = await axios.post('/login', formData);
+      console.log("Fetching CSRF cookie...");
+      await axios.get('http://localhost:8000/sanctum/csrf-cookie');
 
-    console.log("✅ Login successful:", response.data);
+      console.log("Attempting login...");
+      const response = await axios.post('/login', formData);
 
-    // Check cookies in browser
-    console.log("Current cookies:", document.cookie);
+      console.log("✅ Login successful:", response.data);
+      console.log("Current cookies:", document.cookie);
 
-    Swal.fire({
-      icon: 'success',
-      title: 'Welcome!',
-      text: response.data.message || 'Login successful',
-      confirmButtonColor: COLOR_PRIMARY,
-    }).then(() => {
-      refetch();  // Force immediate re-check of /user with the new session
-      navigate('/'); 
-      // Optional: window.location.reload() to refresh any user data
-    });
-  } catch (err) {
-    console.error('Login failed:', err);
-    Swal.fire({
-      icon: 'error',
-      title: 'Login Failed',
-      text: err.response?.data?.message || 'Invalid credentials or server error',
-    });
-  }
-};
+      Swal.fire({
+        icon: 'success',
+        title: 'Welcome!',
+        text: response.data.message || 'Login successful',
+        confirmButtonColor: COLOR_PRIMARY,
+      }).then(() => {
+        refetch();           // Refresh auth state
+        navigate('/');
+      });
+
+    } catch (err) {
+      console.error('Login failed:', err);
+      Swal.fire({
+        icon: 'error',
+        title: 'Login Failed',
+        text: err.response?.data?.message || 'Invalid credentials or server error',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4">
@@ -215,6 +360,7 @@ const Login = () => {
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
+                disabled={isLoading}
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
                 required
               />
@@ -229,6 +375,7 @@ const Login = () => {
                 placeholder="Password"
                 value={formData.password}
                 onChange={handleChange}
+                disabled={isLoading}
                 className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
                 required
               />
@@ -238,7 +385,9 @@ const Login = () => {
             <div className="text-left underline">
               <Link
                 to="/recover"
-                className="text-sm font-medium hover:underline transition-all"
+                className={`text-sm font-medium transition-all ${
+                  isLoading ? 'pointer-events-none opacity-50' : 'hover:underline'
+                }`}
                 style={{ color: COLOR_PRIMARY }}
               >
                 Forgot your password?
@@ -246,15 +395,27 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Sign In Button */}
+          {/* Submit Button with Loading State */}
           <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            whileHover={{ scale: isLoading ? 1 : 1.02 }}
+            whileTap={{ scale: isLoading ? 1 : 0.98 }}
             type="submit"
-            className="w-full py-3.5 rounded-lg text-white font-semibold text-lg shadow-md hover:shadow-lg transition-all"
-            style={{ backgroundColor: COLOR_PRIMARY }}
+            disabled={isLoading}
+            className={`w-full py-3.5 rounded-lg text-white font-semibold text-lg shadow-md transition-all flex items-center justify-center gap-2 ${
+              isLoading
+                ? 'bg-green-700 cursor-wait'
+                : 'bg-green-600 hover:bg-green-700 hover:shadow-lg'
+            }`}
+            style={{ backgroundColor: isLoading ? undefined : COLOR_PRIMARY }}
           >
-            Sign In
+            {isLoading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              'Sign In'
+            )}
           </motion.button>
         </form>
 
@@ -263,7 +424,9 @@ const Login = () => {
           Don't have an account? <br />
           <Link
             to="/register"
-            className="font-semibold hover:underline transition-all"
+            className={`font-semibold transition-all ${
+              isLoading ? 'pointer-events-none opacity-50' : 'hover:underline'
+            }`}
             style={{ color: COLOR_PRIMARY }}
           >
             Create New Account

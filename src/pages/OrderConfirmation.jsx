@@ -79,7 +79,7 @@ export default function OrderConfirmation() {
             Back to Menu
           </button>
           <button
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('/profile?tab=addresses')}
             className="px-10 py-5 border-2 border-[#004d40] text-[#004d40] text-2xl rounded-xl hover:bg-[#DAEBCB]"
           >
             View Orders

@@ -779,6 +779,7 @@ import {
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import Swal from 'sweetalert2';
 
 const COLOR_PRIMARY = '#006A4E';
 
@@ -803,9 +804,28 @@ const EditableField = ({ label, value, onSave, placeholder = '', type = 'text' }
       await onSave(inputValue.trim());
       console.log(`${label} updated successfully`);
       setIsEditing(false);
+      // Success toast
+      Swal.fire({
+        icon: 'success',
+        title: 'Updated!',
+        text: `${label} has been updated successfully.`,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#f0fdf4',
+        iconColor: COLOR_PRIMARY,
+      });
     } catch (err) {
       console.error(`Failed to update ${label}:`, err.response?.data || err.message);
-      alert('Failed to update. Check console for details.');
+      // alert('Failed to update. Check console for details.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Update Failed',
+        text: 'Something went wrong. Please try again later.',
+        confirmButtonColor: COLOR_PRIMARY,
+      });
     } finally {
       setLoading(false);
     }
@@ -908,7 +928,13 @@ const Profile = () => {
         } catch (err) {
           console.error('Error fetching addresses:', err.response?.data || err.message);
           setAddresses([]);
-          alert('Failed to load addresses. Check console.');
+          // alert('Failed to load addresses. Check console.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed to Load Addresses',
+            text: 'Please try refreshing the page.',
+            confirmButtonColor: COLOR_PRIMARY,
+          });
         } finally {
           setLoadingAddresses(false);
         }
@@ -930,7 +956,13 @@ useEffect(() => {
       } catch (err) {
         console.error('Error fetching orders:', err.response?.data || err.message);
         setOrders([]);
-        alert('Failed to load orders. Check console.');
+        // alert('Failed to load orders. Check console.');
+        Swal.fire({
+            icon: 'error',
+            title: 'Failed to Load Orders',
+            text: 'Please try refreshing the page.',
+            confirmButtonColor: COLOR_PRIMARY,
+          });
       } finally {
         setLoadingOrders(false);
       }
@@ -957,10 +989,27 @@ useEffect(() => {
     .then((res) => {
       console.log('Photo uploaded successfully:', res.data);
       refetch();
+      Swal.fire({
+        icon: 'success',
+        title: 'Profile Picture Updated!',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#f0fdf4',
+        iconColor: COLOR_PRIMARY,
+      });
     })
     .catch((err) => {
       console.error('Photo upload failed:', err.response?.data || err.message);
-      alert('Photo upload failed. Check console.');
+      // alert('Photo upload failed. Check console.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Upload Failed',
+        text: 'Could not update profile picture. Please try again.',
+        confirmButtonColor: COLOR_PRIMARY,
+      });
     });
   };
 
@@ -974,23 +1023,70 @@ useEffect(() => {
           ? { ...addr, is_default: true }
           : { ...addr, is_default: false }
       ));
+      Swal.fire({
+        icon: 'success',
+        title: 'Default Address Set',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        background: '#f0fdf4',
+        iconColor: COLOR_PRIMARY,
+      });
     } catch (err) {
       console.error('Failed to set default address:', err.response?.data || err.message);
-      alert('Failed to set default address.');
+      // alert('Failed to set default address.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: 'Could not set default address.',
+        confirmButtonColor: COLOR_PRIMARY,
+      });
     }
   };
 
   // Delete address
   const deleteAddress = async (addressId) => {
-    if (!window.confirm('Are you sure you want to delete this address?')) return;
+    // if (!window.confirm('Are you sure you want to delete this address?')) return;
+    const result = await Swal.fire({
+      title: 'Delete this address?',
+      text: "You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: COLOR_PRIMARY,
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (!result.isConfirmed) return;
 
     try {
       console.log('Deleting address:', addressId);
       await axios.delete(`/user/addresses/${addressId}`);
       setAddresses(prev => prev.filter(addr => addr.id !== addressId));
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: 'Address has been removed successfully.',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        background: '#f0fdf4',
+        iconColor: COLOR_PRIMARY,
+      });
     } catch (err) {
       console.error('Failed to delete address:', err.response?.data || err.message);
-      alert('Failed to delete address.');
+      // alert('Failed to delete address.');
+      Swal.fire({
+        icon: 'error',
+        title: 'Deletion Failed',
+        text: 'Could not delete the address.',
+        confirmButtonColor: COLOR_PRIMARY,
+      });
     }
   };
 
