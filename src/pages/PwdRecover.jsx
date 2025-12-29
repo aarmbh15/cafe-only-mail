@@ -570,8 +570,8 @@ const PwdRecover = () => {
       console.error('   - Request config:', err.config);
 
       const message =
-        err.response?.data?.message ||
-        err.response?.data?.errors?.email?.[0] ||
+        // err.response?.data?.message ||
+        // err.response?.data?.errors?.email?.[0] ||
         'Unable to send reset link. Please check your email or try again later.';
 
       setError(message);

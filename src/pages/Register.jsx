@@ -213,7 +213,7 @@ const Register = () => {
       Swal.fire({
         icon: 'error',
         title: 'Oops...',
-        text: err.response?.data?.message || "Something went wrong",
+        text: "Something went wrong",
       });
     } finally {
       setIsLoading(false); // ← Always stop loading
@@ -232,7 +232,7 @@ const Register = () => {
           <h2 className="text-3xl sm:text-4xl font-bold leading-tight" style={{ color: COLOR_PRIMARY }}>
             Create Account
           </h2>
-          <p className="mt-2 text-sm sm:text-base text-gray-600">Join VERDANT Threads today</p>
+          <p className="mt-2 text-sm sm:text-base text-gray-600">Join Cafe Lamees today</p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>

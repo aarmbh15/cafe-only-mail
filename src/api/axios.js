@@ -2,7 +2,9 @@ import axios from 'axios';
 
 // Create a custom axios instance
 const instance = axios.create({
-  baseURL: 'http://localhost:8000/api',  // Your Laravel API base URL
+  // baseURL: 'http://localhost:8000/api',  // Your Laravel API base URL
+  baseURL: 'https://test.cafelamees.co.uk/api',
+  // baseURL: '/api',
   withCredentials: true,                 // Required for Sanctum to send cookies
 });
 

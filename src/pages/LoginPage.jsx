@@ -304,7 +304,7 @@ const Login = () => {
       setIsLoading(true);
 
       console.log("Fetching CSRF cookie...");
-      await axios.get('http://localhost:8000/sanctum/csrf-cookie');
+      await axios.get('https://test.cafelamees.co.uk/api/sanctum/csrf-cookie');
 
       console.log("Attempting login...");
       const response = await axios.post('/login', formData);
@@ -327,7 +327,7 @@ const Login = () => {
       Swal.fire({
         icon: 'error',
         title: 'Login Failed',
-        text: err.response?.data?.message || 'Invalid credentials or server error',
+        text: 'Invalid credentials or server error',
       });
     } finally {
       setIsLoading(false);

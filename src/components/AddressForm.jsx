@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from '../api/axios';
 import { Home, Building, MapPin, ArrowLeft } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 const COLOR_PRIMARY = '#006A4E';
 
