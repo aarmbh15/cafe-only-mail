@@ -335,12 +335,12 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 bg-[#DAEBCB]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
-        className="max-w-md w-full space-y-8 p-10 rounded-2xl shadow-xl"
+        className="max-w-md w-full space-y-8 p-10 rounded-2xl shadow-xl border-2 border-[#064e3b]"
       >
         <div className="text-center">
           <h2 className="text-4xl font-bold" style={{ color: COLOR_PRIMARY }}>
@@ -361,7 +361,7 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 disabled={isLoading}
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
+                className="w-full pl-12 pr-4 py-3 border border-[#064e3b] rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
                 required
               />
             </div>
@@ -376,7 +376,7 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
                 disabled={isLoading}
-                className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
+                className="w-full pl-12 pr-4 py-3 border border-[#064e3b] rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all"
                 required
               />
             </div>

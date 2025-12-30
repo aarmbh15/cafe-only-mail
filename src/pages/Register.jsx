@@ -221,12 +221,12 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-[#DAEBCB]">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
-        className="w-full max-w-md space-y-8 p-6 sm:p-10 rounded-2xl shadow-xl"
+        className="w-full max-w-md space-y-8 p-6 sm:p-10 rounded-2xl shadow-xl border-2 border-[#064e3b]"
       >
         <div className="text-center">
           <h2 className="text-3xl sm:text-4xl font-bold leading-tight" style={{ color: COLOR_PRIMARY }}>
@@ -246,7 +246,7 @@ const Register = () => {
                 placeholder="First name"
                 value={formData.first_name}
                 onChange={handleChange}
-                className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-lg"
+                className="w-full pl-12 pr-4 py-3.5 border border-[#064e3b] rounded-lg"
                 required
                 disabled={isLoading}
               />
@@ -261,7 +261,7 @@ const Register = () => {
                 placeholder="Last name"
                 value={formData.last_name}
                 onChange={handleChange}
-                className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-lg"
+                className="w-full pl-12 pr-4 py-3.5 border border-[#064e3b] rounded-lg"
                 required
                 disabled={isLoading}
               />
@@ -276,7 +276,7 @@ const Register = () => {
                 placeholder="Email address"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full pl-12 pr-4 py-3.5 border border-gray-300 rounded-lg"
+                className="w-full pl-12 pr-4 py-3.5 border border-[#064e3b] rounded-lg"
                 required
                 disabled={isLoading}
               />
@@ -328,13 +328,15 @@ const Register = () => {
 
         <p className="text-center text-sm text-gray-600">
           Already have an account? <br />
-          <Link 
-            to="/login" 
-            style={{ color: COLOR_PRIMARY }}
-            className={isLoading ? "pointer-events-none opacity-50" : ""}
-          >
-            Sign in
-          </Link>
+        <Link
+                      to="/login"
+                      className={`font-semibold transition-all ${
+                        isLoading ? 'pointer-events-none opacity-50' : 'hover:underline'
+                      }`}
+                      style={{ color: COLOR_PRIMARY }}
+                    >
+                      Sign in
+                    </Link>
         </p>
       </motion.div>
     </div>
